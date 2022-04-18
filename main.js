@@ -13,16 +13,13 @@ async function readJeopardyData() {
         let roundData = _.groupBy(dataByDate[key], 'round');
         console.log(roundData);
         dataByDate[key] = roundData;
+        for (let key in roundData){
+            let categoryData = _.groupBy(roundData[key], 'category');
+            roundData[key] = categoryData;
+        }
     }
 
-    console.log(dataByDate)
-
-
-    // for(let value of Object.values(dataByDate)){
-    //     // console.log(value);
-    //     let roundData = _.groupBy(value, 'round');
-
-    //   }
+    console.log(dataByDate);
 
 }
 
