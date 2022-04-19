@@ -8,6 +8,10 @@ async function readJeopardyData() {
         for (let key in roundData){
             let categoryData = _.groupBy(roundData[key], 'category');
             roundData[key] = categoryData;
+            for (let key in categoryData){
+                let valueData = _.groupBy(categoryData[key], 'value');
+                categoryData[key] = valueData;
+            }
         }
     }
 
