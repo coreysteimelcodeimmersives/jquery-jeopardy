@@ -1,16 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet'>
+    <!-- Bootstrap CSS and JS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous">
+    </script>
     <link rel="stylesheet" href="styles.css">
     <title>Document</title>
 </head>
+
 <body>
+
+    <div id="title">
+        <h1>JEOPARDY!</h1>
+    </div>
+    <div id="score">
+        <h3>YOUR SCORE: </h3>
+    </div>
+    <div id="grid">
+        <div id="categories">
+            <div class="categoryBox">
+                <p id='catBoxOne'>Category One</p>
+            </div>
+            <div class="categoryBox">
+                <p id='catBoxTwo'>Category Two</p>
+            </div>
+            <div class="categoryBox">
+                <p id='catBoxThree'>Category Three</p>
+            </div>
+            <div class="categoryBox">
+                <p id='catBoxFour'>Category Four</p>
+            </div>
+            <div class="categoryBox">
+                <p id='catBoxFive'>Category Five</p>
+            </div>
+            <div class="categoryBox">
+                <p id='catBoxSix'>AN ELEMENT-AL CATEGORY</p>
+            </div>
+        </div>
+        <div id='questions'>
+            <div class='catQuestions' id='catOneQuestions'>
+                <div class='question'><span id="catOneQuestionOne">$1800</span></div>
+                <div class='question'><span id="catOneQuestionTwo">$1800</span></div>
+                <div class='question'><span id="catOneQuestionThree">$1800</span></div>
+                <div class='question'><span id="catOneQuestionFour">$1800</span></div>
+                <div class='question'><span id="catOneQuestionFive">$1800</span></div>
+            </div>
+            <div class='catQuestions' id='catTwoQuestions'>
+                <div class='question'><span id='catTwoQuestionOne'>$1800</span></div>
+                <div class='question'><span id='catTwoQuestionTwo'>$1800</span></div>
+                <div class='question'><span id='catTwoQuestionThree'>$1800</span></div>
+                <div class='question'><span id='catTwoQuestionFour'>$1800</span></div>
+                <div class='question'><span id='catTwoQuestionFive'>$1800</span></div>
+            </div>
+            <div class='catQuestions' id='catThreeQuestions'>
+                <div class='question'><span id='catThreeQuestionOne'>$1800</span></div>
+                <div class='question'><span id='catThreeQuestionTwo'>$1800</span></div>
+                <div class='question'><span id='catThreeQuestionThree'>$1800</span></div>
+                <div class='question'><span id='catThreeQuestionFour'>$1800</span></div>
+                <div class='question'><span id='catThreeQuestionFive'>$1800</span></div>
+            </div>
+            <div class='catQuestions' id='catFourQuestions'>
+                <div class='question' id='catFourQuestionOne'><span>$1800</span></div>
+                <div class='question' id='catFourQuestionTwo'><span>$1800</span></div>
+                <div class='question' id='catFourQuestionThree'><span>$1800</span></div>
+                <div class='question' id='catFourQuestionFour'><span>$1800</span></div>
+                <div class='question' id='catFourQuestionFive'><span>$1800</span></div>
+            </div>
+            <div class='catQuestions' id='catFiveQuestions'>
+                <div class='question'><span id='catFiveQuestionOne'>$1800</span></div>
+                <div class='question'><span id='catFiveQuestionTwo'>$1800</span></div>
+                <div class='question'><span id='catFiveQuestionThree'>$1800</span></div>
+                <div class='question'><span id='catFiveQuestionFour'>$1800</span></div>
+                <div class='question'><span id='catFiveQuestionFive'>$1800</span></div>
+            </div>
+            <div class='catQuestions' id='catsixQuestions'>
+                <div class='question'><span id='catSixQuestionOne'>$1800</span></div>
+                <div class='question'><span id='catSixQuestionTwo'>$1800</span></div>
+                <div class='question'><span id='catSixQuestionThree'>$1800</span></div>
+                <div class='question'><span id='catSixQuestionFour'>$1800</span></div>
+                <div class='question'><span id='catSixQuestionFive'>$1800</span></div>
+            </div>
+        </div>
+    </div>
+    <!-- <div id="question"></div>
+    <div id="answer"></div> -->
+
+
+
+
 
 
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
     <script src='main.js'></script>
 </body>
+
 </html>
