@@ -15,7 +15,6 @@ async function readJeopardyData() {
         }
     }
     console.log(dataByDate);
-
 }
 
 readJeopardyData();
