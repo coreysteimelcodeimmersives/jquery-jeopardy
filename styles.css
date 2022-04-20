@@ -122,6 +122,12 @@ p{
     justify-content: center;
 }
 
+#inputArea {
+    padding: 1.5em;
+}
+
+
+
 
 /* #question{
     margin: 2vh;

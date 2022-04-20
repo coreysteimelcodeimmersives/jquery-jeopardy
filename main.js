@@ -1,5 +1,6 @@
 // GLOBAL VARIABLES
-let selectedQuestions = localStorage.getItem('selectedQuestions');
+let selectedQuestionArr = localStorage.getItem('selectedQuestions');
+let selectedQuestionDOM;
 
 
 // THE CODE.
@@ -20,7 +21,8 @@ async function readJeopardyData() {
         }
     }
     console.log(dataByDate);
-    selectedQuestions = setUpSelectedQuestion();
+    // resetLocalStorage();
+    selectedQuestionArr = setUpSelectedQuestion();
     setUpQuestionListener();
 }
 
@@ -29,36 +31,60 @@ readJeopardyData();
 
 
 // Helper Functions
+// function setQuestionToSelected
+
 function setUpQuestionListener() {
     let questions = document.querySelectorAll('#questions > div > button');
-
     for (let i = 0; i < questions.length; i++) {
         let question = questions[i];
-        question.addEventListener('click', function(){
-            if (question.className == 'question'){
+        question.addEventListener('click', function () {
+            if (question.className == 'question') {
                 setQuestionToSelected(question.id);
-                question.classList.toggle('selected');
+                // question.classList.toggle('selected');
+                submitAnswer();
             }
-            
         })
     }
 }
 
 let setUpSelectedQuestion = () => {
-    selectedQuestions = localStorage.getItem('selectedQuestions');
-    if (selectedQuestions === null){
-        selectedQuestions = [];
+    selectedQuestionArr = localStorage.getItem('selectedQuestions');
+    if (selectedQuestionArr === null) {
+        selectedQuestionArr = [];
     } else {
-        selectedQuestions = JSON.parse(selectedQuestions);
-        for (let i = 0; i < selectedQuestions.length; i++){
-            let selectedQuestion = document.querySelector(`#${selectedQuestions[i]}`);
-            selectedQuestion.classList.toggle('selected');
+        selectedQuestionArr = JSON.parse(selectedQuestionArr);
+        for (let i = 0; i < selectedQuestionArr.length; i++) {
+            selectedQuestionDOM = document.querySelector(`#${selectedQuestionArr[i]}`);
+            selectedQuestionDOM.removeAttribute('data-bs-toggle');
+            selectedQuestionDOM.removeAttribute('data-bs-target');
+            selectedQuestionDOM.classList.remove('question');
+            selectedQuestionDOM.classList.add('selected');
         }
     }
-    return selectedQuestions;
+    return selectedQuestionArr;
 }
 
-function setQuestionToSelected(str){
-    selectedQuestions.push(str);
-    localStorage.setItem('selectedQuestions', JSON.stringify(selectedQuestions));
+function setQuestionToSelected(str) {
+    selectedQuestionDOM = document.querySelector(`#${str}`);
+    selectedQuestionDOM.removeAttribute('data-bs-toggle');
+    selectedQuestionDOM.removeAttribute('data-bs-target');
+    selectedQuestionDOM.classList.remove('question');
+    selectedQuestionDOM.classList.add('selected');
+    selectedQuestionArr.push(str);
+    localStorage.setItem('selectedQuestions', JSON.stringify(selectedQuestionArr));
+}
+
+function submitAnswer() {
+    let answerInput = document.querySelector('#answerInput');
+    let submitButton = document.querySelector('#submitButton');
+    submitButton.addEventListener('click', function () {
+        console.log('answer input?')
+        console.log(answerInput.value);
+
+    })
+}
+
+function resetLocalStorage() {
+    selectedQuestionArr = [];
+    localStorage.setItem('selectedQuestions', JSON.stringify(selectedQuestionArr));
 }
