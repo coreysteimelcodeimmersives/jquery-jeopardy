@@ -18,3 +18,10 @@ async function readJeopardyData() {
 }
 
 readJeopardyData();
+
+// let questionBoxes = document.querySelector('#questions');
+
+// questionBoxes.addEventListener('click', function(event){
+//     console.log('is this working?')
+//     event.target.toggle('selected')
+// })

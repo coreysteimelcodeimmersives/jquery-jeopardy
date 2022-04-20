@@ -64,6 +64,7 @@ h3{
     display: flex;
     align-items: center;
     justify-content: center;
+    /* box-shadow: -2.2px -1.2px gray; */
 }
 p{
     color: white;
@@ -90,6 +91,12 @@ p{
 }
 
 .question{
+    color: #FFC600;
+    font-family: "Oswald";
+    font-weight: bolder;
+    font-size: 4vw;
+    text-shadow: 4px 4px black;
+    text-align: center;
     height: 10vh;
     background-color: #072AC8;
     display: flex;
@@ -97,13 +104,22 @@ p{
     justify-content: center;
 }
 
-span{
+.question:hover{
+    background-color: #1E96FC;
+}
+
+.selected{
     color: #FFC600;
     font-family: "Oswald";
     font-weight: bolder;
     font-size: 4vw;
     text-shadow: 4px 4px black;
     text-align: center;
+    height: 10vh;
+    background-color: #1E96FC;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 
