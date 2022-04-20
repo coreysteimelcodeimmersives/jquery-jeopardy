@@ -64,9 +64,6 @@ h3{
     display: flex;
     align-items: center;
     justify-content: center;
-    /* box-shadow: -2.2px -1.2px gray; */
-}
-p{
     color: white;
     font-family: 'Oswald';
     font-size: 2vw;
