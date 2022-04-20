@@ -20,7 +20,7 @@ h1{
     font-size: 5vw;
     font-weight: bolder;
     color: #FFC600;
-    text-shadow: 5px 5px black;
+    text-shadow: 2px 2px black;
 }
 
 #score{
@@ -35,7 +35,7 @@ h3{
     font-size: 3vw;
     font-weight: bold;
     color: #FFC600;
-    text-shadow: 3px 3px black;
+    text-shadow: 2px 2px black;
 }
 
 #grid{
@@ -95,7 +95,7 @@ p{
     font-family: "Oswald";
     font-weight: bolder;
     font-size: 4vw;
-    text-shadow: 4px 4px black;
+    text-shadow: 2px 2px black;
     text-align: center;
     height: 10vh;
     background-color: #072AC8;
@@ -109,11 +109,11 @@ p{
 }
 
 .selected{
-    color: #FFC600;
+    color: #ffe380;
     font-family: "Oswald";
     font-weight: bolder;
     font-size: 4vw;
-    text-shadow: 4px 4px black;
+    text-shadow: 2px 2px black;
     text-align: center;
     height: 10vh;
     background-color: #1E96FC;
