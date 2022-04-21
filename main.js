@@ -402,7 +402,7 @@ function submitAnswer(answerStr, num) {
             answerModalBody.innerText = '\nCongratulations, you are correct!';
         } else {
             answerModalBody.innerText = `\nI'm sorry. The correct answer is:\n\n${answerStr}`;
-            num = num * -1
+            num = num * (-1);
         }
         console.log('in the modal user score');
         userScore = setUpLocalStorageUserScore();
@@ -412,8 +412,8 @@ function submitAnswer(answerStr, num) {
         setUserScoreDom(userScore);
         console.log('local storage user score');
         console.log(setUpLocalStorageUserScore());
-        answerInput.value = '';
     });
+    answerInput.value = '';
 };
 
 function resetLocalStorage() {
