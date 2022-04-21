@@ -44,9 +44,9 @@ async function readJeopardyData() {
     categoriesArr = setUpLocalStorageCategoriesArr(roundData);
     setUpCategoriesDoms(categoriesArr);
     valuesArr = setUpLocalStorageValuesArr(roundData, categoriesArr);
-    setUpValueDoms(valuesArr, categoriesDomArr);
+    setUpValueDoms(valuesArr);
     questionsArr = setUpLocalStorageQuestionsArr(roundData, categoriesArr, valuesArr);
-    // questionsArr =
+    setUpQuestionDoms(questionsArr)
 
     selectedquestionsArr = setUpSelectedQuestion();
     setUpQuestionListener();
@@ -201,7 +201,7 @@ let setUpLocalStorageValuesArr = (roundData, categoriesArr) => {
     }
 }
 
-let setUpValueDoms = (valuesArr, categoriesDomArr) => {
+let setUpValueDoms = (valuesArr) => {
     for (let i = 0; i < categoriesDomArr.length; i++) {
         let categoryRow = categoriesDomArr[i];
         let values = valuesArr[i];
@@ -214,6 +214,23 @@ let setUpValueDoms = (valuesArr, categoriesDomArr) => {
         for (let i = 0; i < categoryRow.length; i++) {
             let question = categoryRow[i];
             question.innerText = values[i];
+        }
+    }
+}
+
+let setUpQuestionDoms = (questionsArr) => {
+    for (let i = 0; i < categoriesDomArr.length; i++){
+        let categoryRow = categoriesDomArr[i];
+        let questions = questionsArr[i];
+        let diffChecker = categoryRow.length - questions.length;
+        if (diffChecker != 0) {
+            for (let i = 0; i < diffChecker; i++){
+                questions.push('X');
+            }
+        }
+        for (let i = 0; i < categoryRow.length; i++){
+            let question = categoryRow[i];
+            question.setAttribute('data-question', questions[i]);
         }
     }
 }
