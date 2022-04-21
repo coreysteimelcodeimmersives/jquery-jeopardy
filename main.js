@@ -1,5 +1,5 @@
 // GLOBAL VARIABLES
-let selectedquestionsArr = localStorage.getItem('selectedQuestions');
+let selectedQuestionsArr = localStorage.getItem('selectedQuestions');
 let selectedQuestionDOM;
 let jeopardyRound = localStorage.getItem('jeopardyRound');
 let gameData = localStorage.getItem('gameData');
@@ -10,6 +10,7 @@ let categoriesArr = localStorage.getItem('categoriesArr');
 let valuesArr = localStorage.getItem('valuesArr');
 let questionsArr = localStorage.getItem('questionsArr');
 let answersArr = localStorage.getItem('answersArr');
+let userScore = localStorage.getItem('userScore');
 let catOneQuestions = document.querySelectorAll('#catOneQuestions > button');
 let catTwoQuestions = document.querySelectorAll('#catTwoQuestions > button');
 let catThreeQuestions = document.querySelectorAll('#catThreeQuestions > button');
@@ -37,19 +38,23 @@ async function readJeopardyData() {
         }
     }
     console.log(dataByDate);
-    // resetLocalStorage();
+    resetLocalStorage();
     gameData = setUpGameData(dataByDate);
-    jeopardyRound = setUpJeopardyRound();
+    jeopardyRound = setUpLocalStorageJeopardyRound();
+    setUpJeopardyRoundDom(jeopardyRound);
+    userScore = setUpLocalStorageUserScore();
+    setUserScoreDom(userScore);
     roundData = setUpRoundData(gameData, jeopardyRound);
     categoriesArr = setUpLocalStorageCategoriesArr(roundData);
     setUpCategoriesDoms(categoriesArr);
+    selectedQuestionsArr = setUpSelectedQuestion();
     valuesArr = setUpLocalStorageValuesArr(roundData, categoriesArr);
     setUpValueDoms(valuesArr);
     questionsArr = setUpLocalStorageQuestionsArr(roundData, categoriesArr, valuesArr);
     setUpQuestionDoms(questionsArr);
     answersArr = setUpLocalStorageAnswersArr(roundData, categoriesArr, valuesArr);
     setUpAnswerDoms(answersArr);
-    selectedquestionsArr = setUpSelectedQuestion();
+
     setUpQuestionListener();
 }
 
@@ -58,6 +63,22 @@ readJeopardyData();
 
 
 // Helper Functions
+function currencyToNum(val){
+    console.log('val')
+    console.log(val);
+    let newVal = '';
+    let numArr = ['1','2','3','4','5','6','7','8','9','0'];
+    for (let i = 0; i < val.length; i++){
+        console.log(val[i])
+        if (numArr.includes(val[i])){
+            newVal = newVal + val[i];
+            console.log(newVal);
+        }
+
+    }
+    return newVal;
+}
+
 function setUpQuestionListener() {
     for (let i = 0; i < questions.length; i++) {
         let question = questions[i];
@@ -67,27 +88,30 @@ function setUpQuestionListener() {
                 let questionStr = question.getAttribute('data-question');
                 setQuestionModalText(questionStr);
                 let answerStr = question.getAttribute('data-answer');
-                submitAnswer(answerStr);
+                let questionValue = Number(currencyToNum(question.innerText));
+                console.log('question value');
+                console.log(questionValue);
+                submitAnswer(answerStr, questionValue);
             }
         })
     }
 }
 
 let setUpSelectedQuestion = () => {
-    selectedquestionsArr = localStorage.getItem('selectedQuestions');
-    if (selectedquestionsArr === null) {
-        selectedquestionsArr = [];
+    selectedQuestionsArr = localStorage.getItem('selectedQuestions');
+    if (selectedQuestionsArr === null) {
+        selectedQuestionsArr = [];
     } else {
-        selectedquestionsArr = JSON.parse(selectedquestionsArr);
-        for (let i = 0; i < selectedquestionsArr.length; i++) {
-            selectedQuestionDOM = document.querySelector(`#${selectedquestionsArr[i]}`);
+        selectedQuestionsArr = JSON.parse(selectedQuestionsArr);
+        for (let i = 0; i < selectedQuestionsArr.length; i++) {
+            selectedQuestionDOM = document.querySelector(`#${selectedQuestionsArr[i]}`);
             selectedQuestionDOM.removeAttribute('data-bs-toggle');
             selectedQuestionDOM.removeAttribute('data-bs-target');
             selectedQuestionDOM.classList.remove('question');
             selectedQuestionDOM.classList.add('selected');
         }
     }
-    return selectedquestionsArr;
+    return selectedQuestionsArr;
 }
 
 let setUpGameData = (data) => {
@@ -250,21 +274,29 @@ let setUpValueDoms = (valuesArr) => {
         for (let i = 0; i < categoryRow.length; i++) {
             let question = categoryRow[i];
             question.innerText = values[i];
+            if (values[i] == 'X') {
+                question.removeAttribute('data-bs-toggle');
+                question.removeAttribute('data-bs-target');
+                question.classList.remove('question');
+                question.classList.add('selected');
+                selectedQuestionsArr.push(question.id);
+                localStorage.setItem('selectedQuestions', JSON.stringify(selectedQuestionsArr));
+            }
         }
     }
 }
 
 let setUpAnswerDoms = (answersArr) => {
-    for (let i = 0; i < categoriesDomArr.length; i++){
+    for (let i = 0; i < categoriesDomArr.length; i++) {
         let categoryRow = categoriesDomArr[i];
         let answers = answersArr[i];
         let diffChecker = categoryRow.length - answers.length;
         if (diffChecker != 0) {
-            for (let i = 0; i < diffChecker; i++){
+            for (let i = 0; i < diffChecker; i++) {
                 answers.push('X');
             }
         }
-        for (let i = 0; i < categoryRow.length; i++){
+        for (let i = 0; i < categoryRow.length; i++) {
             let answer = categoryRow[i];
             answer.setAttribute('data-answer', answers[i]);
         }
@@ -273,30 +305,63 @@ let setUpAnswerDoms = (answersArr) => {
 
 
 let setUpQuestionDoms = (questionsArr) => {
-    for (let i = 0; i < categoriesDomArr.length; i++){
+    for (let i = 0; i < categoriesDomArr.length; i++) {
         let categoryRow = categoriesDomArr[i];
         let questions = questionsArr[i];
         let diffChecker = categoryRow.length - questions.length;
         if (diffChecker != 0) {
-            for (let i = 0; i < diffChecker; i++){
+            for (let i = 0; i < diffChecker; i++) {
                 questions.push('X');
             }
         }
-        for (let i = 0; i < categoryRow.length; i++){
+        for (let i = 0; i < categoryRow.length; i++) {
             let question = categoryRow[i];
             question.setAttribute('data-question', questions[i]);
         }
     }
 }
 
-let setUpJeopardyRound = () => {
+let setUpJeopardyRoundDom = (jeopardyRound) => {
+    let jeopardyRoundDom = document.querySelector('#title > h1');
+    jeopardyRoundDom.innerText = jeopardyRound.toUpperCase();
+}
+
+let setUpLocalStorageJeopardyRound = () => {
     jeopardyRound = localStorage.getItem('jeopardyRound');
     if (jeopardyRound === null) {
         jeopardyRound = "Jeopardy!"
+        localStorage.setItem('jeopardyRound', jeopardyRound);
+        console.log('if block: round')
+        console.log(jeopardyRound);
+        return jeopardyRound;
+    } else {
+        console.log('else block: round');
+        console.log(jeopardyRound);
+        return jeopardyRound;
     }
-    console.log('round')
-    console.log(jeopardyRound);
-    return jeopardyRound;
+
+}
+
+let setUserScoreDom = (userScore) => {
+    let userScoreDom = document.querySelector('#score > h3');
+    console.log('set dom user score')
+    console.log(userScore);
+    userScoreDom.innerText = `YOUR SCORE: ${userScore}`;
+}
+
+let setUpLocalStorageUserScore = () => {
+    userScore = localStorage.getItem('userScore');
+    if (userScore === null) {
+        userScore = 0;
+        localStorage.setItem('userScore', userScore);
+        console.log('if block: user score');
+        console.log(userScore);
+        return userScore;
+    } else {
+        console.log('else block: user score');
+        console.log(userScore);
+        return userScore;
+    }
 }
 
 function setQuestionToSelected(str) {
@@ -305,8 +370,8 @@ function setQuestionToSelected(str) {
     selectedQuestionDOM.removeAttribute('data-bs-target');
     selectedQuestionDOM.classList.remove('question');
     selectedQuestionDOM.classList.add('selected');
-    selectedquestionsArr.push(str);
-    localStorage.setItem('selectedQuestions', JSON.stringify(selectedquestionsArr));
+    selectedQuestionsArr.push(str);
+    localStorage.setItem('selectedQuestions', JSON.stringify(selectedQuestionsArr));
 }
 
 function setQuestionModalText(str) {
@@ -314,26 +379,46 @@ function setQuestionModalText(str) {
     questionModalBody.innerText = `\n${str}`;
 }
 
-function submitAnswer(answerStr) {
+function submitAnswer(answerStr, num) {
     let answerInput = document.querySelector('#answerInput');
     let submitButton = document.querySelector('#submitButton');
     submitButton.addEventListener('click', function () {
         console.log('answer input?')
         console.log(answerInput.value);
-        let userSubmission = answerInput.value;
-        userSubmission.toLowerCase();
-        answerStr.toLowerCase();
+        let userSubmission = answerInput.value
+        if (userSubmission != null){
+            userSubmission = userSubmission.toLowerCase();
+        }
+        
+        console.log('this is the user input to lower case');
+        console.log(userSubmission);
+        answerStr = answerStr.toLowerCase();
+        console.log('this is the answer str to lower case');
+        console.log(answerStr);
         let answerModalBody = document.querySelector('#answerBody');
-        if (userSubmission == answerStr){
+        console.log('num equals');
+        console.log(num);
+        if (userSubmission == answerStr) {
             answerModalBody.innerText = '\nCongratulations, you are correct!';
         } else {
             answerModalBody.innerText = `\nI'm sorry. The correct answer is:\n\n${answerStr}`;
+            num = num * -1
         }
+        console.log('in the modal user score');
+        userScore = setUpLocalStorageUserScore();
+        console.log(userScore);
+        userScore = Number(userScore) + num;
+        localStorage.setItem('userScore', userScore);
+        setUserScoreDom(userScore);
+        console.log('local storage user score');
+        console.log(setUpLocalStorageUserScore());
+        answerInput.value = '';
     });
 };
 
 function resetLocalStorage() {
-    selectedquestionsArr = [];
-    localStorage.setItem('selectedQuestions', JSON.stringify(selectedquestionsArr));
-    localStorage.clear();
+    selectedQuestionsArr = [];
+    localStorage.setItem('selectedQuestions', JSON.stringify(selectedQuestionsArr));
+    localStorage.setItem('userScore', 0);
+    // localStorage.clear();
 }
