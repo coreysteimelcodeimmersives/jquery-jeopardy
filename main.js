@@ -4,7 +4,8 @@ let selectedQuestionDOM;
 let jeopardyRound = localStorage.getItem('jeopardyRound');
 let gameData = localStorage.getItem('gameData');
 let roundData = localStorage.getItem('roundData');
-let questions = document.querySelectorAll('#questions > div > button');
+// let questions = document.querySelectorAll('#questions > div > button');
+let questions = document.querySelector('#questions');
 let categories = document.querySelectorAll('#categories > button');
 let categoriesArr = localStorage.getItem('categoriesArr');
 let valuesArr = localStorage.getItem('valuesArr');
@@ -18,6 +19,19 @@ let catFourQuestions = document.querySelectorAll('#catFourQuestions > button');
 let catFiveQuestions = document.querySelectorAll('#catFiveQuestions > button');
 let catsixQuestions = document.querySelectorAll('#catsixQuestions > button');
 let categoriesDomArr = [catOneQuestions, catTwoQuestions, catThreeQuestions, catFourQuestions, catFiveQuestions, catsixQuestions];
+let answerForm = document.querySelector('#myAnswerFormArea');
+let answerInput = document.querySelector('#answerInput');
+let submitButton = document.querySelector('#submitButton')
+let continueButton = document.querySelector('#continueButton');
+let answerStr = '';
+let questionValue = 0;
+let userSubmission = '';
+let answerModalBody = document.querySelector('#answerBody');
+let questionForm = document.querySelector('#myQuestionFormArea');
+let questionObj;
+let endSubmit = false;
+let questionId = '';
+
 
 
 // THE CODE.
@@ -38,7 +52,7 @@ async function readJeopardyData() {
         }
     }
     console.log(dataByDate);
-    resetLocalStorage();
+    // resetLocalStorage();
     gameData = setUpGameData(dataByDate);
     jeopardyRound = setUpLocalStorageJeopardyRound();
     setUpJeopardyRoundDom(jeopardyRound);
@@ -54,11 +68,13 @@ async function readJeopardyData() {
     setUpQuestionDoms(questionsArr);
     answersArr = setUpLocalStorageAnswersArr(roundData, categoriesArr, valuesArr);
     setUpAnswerDoms(answersArr);
+    getQuestion(submitUserAnswer);
 
-    setUpQuestionListener();
 }
 
 readJeopardyData();
+// getQuestion(submitUserAnswer);
+// submitUserAnswer();
 
 
 
@@ -79,41 +95,79 @@ function currencyToNum(val) {
     return newVal;
 }
 
-function setUpQuestionListener() {
-    for (let i = 0; i < questions.length; i++) {
-        let question = questions[i];
-        question.addEventListener('click', function () {
-
-            console.log('before answering user score is')
-            console.log(userScore)
-            if (question.className == 'question') {
-                setQuestionToSelected(question.id);
-                let questionStr = question.getAttribute('data-question');
-                setQuestionModalText(questionStr);
-                let answerStr = question.getAttribute('data-answer');
-                let questionValue = Number(currencyToNum(question.innerText));
-                console.log('question value');
-                console.log(questionValue);
-
-                submitAnswer(answerStr, questionValue);
-            }
-        })
-    }
+function getQuestion(myCallback) {
+    // for (let i = 0; i < questions.length; i++) {
+    // let question = questions[i];
+    questions.addEventListener('click', function (event) {
+        console.log('the question is');
+        console.log(event.target);
+        myCallback(event.target)
+    });
+    // }
 }
+
+function submitUserAnswer(question) {
+    if (question.className == 'question') {
+        let questionStr = question.getAttribute('data-question');
+        setQuestionModalText(questionStr);
+        questionForm.style.display = "block";
+        answerStr = question.getAttribute('data-answer');
+        questionValue = Number(currencyToNum(question.innerText));
+        console.log('question value');
+        console.log(questionValue);
+        console.log('answer value');
+        console.log(answerStr);
+        console.log('question id')
+        questionId = question.id;
+        console.log(questionId);
+        endSubmit = false;
+        submitButton.addEventListener('click', function () {
+            if (!endSubmit) {
+                userSubmission = answerInput.value
+                if (userSubmission != null) {
+                    userSubmission = userSubmission.toLowerCase();
+                }
+                answerStrLC = answerStr.toLowerCase();
+                if (userSubmission == answerStrLC) {
+                    answerModalBody.innerText = '\nCongratulations, you are correct!';
+                } else if (userSubmission != answerStrLC) {
+                    answerModalBody.innerText = `\nI'm sorry. The correct answer is:\n\n${answerStr}`;
+                    questionValue = (-1) * questionValue;
+                }
+                userScore = Number(userScore) + questionValue;
+                userScore = userScore.toString();
+                localStorage.setItem('userScore', userScore);
+                setUserScoreDom(userScore);
+                setQuestionToSelected(questionId);
+                questionForm.style.display = 'none';
+                answerForm.style.display = 'block';
+                answerInput.value = '';
+                endSubmit = true;
+            }
+        });
+    }
+
+}
+
+continueButton.addEventListener('click', function () {
+    answerForm.style.display = 'none';
+})
 
 let setUpSelectedQuestion = () => {
     selectedQuestionsArr = localStorage.getItem('selectedQuestions');
     if (selectedQuestionsArr === null) {
         selectedQuestionsArr = [];
+        console.log('if block: selected questions arr')
+        console.log(selectedQuestionsArr);
     } else {
         selectedQuestionsArr = JSON.parse(selectedQuestionsArr);
         for (let i = 0; i < selectedQuestionsArr.length; i++) {
             selectedQuestionDOM = document.querySelector(`#${selectedQuestionsArr[i]}`);
-            selectedQuestionDOM.removeAttribute('data-bs-toggle');
-            selectedQuestionDOM.removeAttribute('data-bs-target');
             selectedQuestionDOM.classList.remove('question');
             selectedQuestionDOM.classList.add('selected');
         }
+        console.log('if block: selected questions arr')
+        console.log(selectedQuestionsArr);
     }
     return selectedQuestionsArr;
 }
@@ -370,8 +424,8 @@ let setUpLocalStorageUserScore = () => {
 
 function setQuestionToSelected(str) {
     selectedQuestionDOM = document.querySelector(`#${str}`);
-    selectedQuestionDOM.removeAttribute('data-bs-toggle');
-    selectedQuestionDOM.removeAttribute('data-bs-target');
+    console.log('turn this question to selected')
+    console.log(selectedQuestionDOM)
     selectedQuestionDOM.classList.remove('question');
     selectedQuestionDOM.classList.add('selected');
     selectedQuestionsArr.push(str);
@@ -383,42 +437,7 @@ function setQuestionModalText(str) {
     questionModalBody.innerText = `\n${str}`;
 }
 
-function submitAnswer(answerStr, num) {
-    let answerInput = document.querySelector('#answerInput');
-    let submitButton = document.querySelector('#submitButton');
-    submitButton.addEventListener('click', function () {
-        console.log('answer input?')
-        console.log(answerInput.value);
-        let userSubmission = answerInput.value
-        if (userSubmission != null) {
-            userSubmission = userSubmission.toLowerCase();
-        }
-        console.log('this is the user input to lower case');
-        console.log(userSubmission);
-        answerStr = answerStr.toLowerCase();
-        console.log('this is the answer str to lower case');
-        console.log(answerStr);
-        let answerModalBody = document.querySelector('#answerBody');
-        if (userSubmission == answerStr) {
-            answerModalBody.innerText = '\nCongratulations, you are correct!';
-        } else if (userSubmission != answerStr && answerStr != null) {
-            answerModalBody.innerText = `\nI'm sorry. The correct answer is:\n\n${answerStr}`;
-            num = (-1) * num;
-            console.log('else block num')
-            console.log(num);
-        }
-        if (answerStr != null) {
-            userScore = Number(userScore) + num;
-            console.log('after answering user score is');
-            userScore = userScore.toString();
-            console.log(userScore);
-            localStorage.setItem('userScore', userScore);
-            setUserScoreDom(userScore);
-        }
 
-    });
-    answerInput.value = '';
-};
 
 function resetLocalStorage() {
     selectedQuestionsArr = [];
