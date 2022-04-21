@@ -9,7 +9,7 @@ let categories = document.querySelectorAll('#categories > button');
 let categoriesArr = localStorage.getItem('categoriesArr');
 let valuesArr = localStorage.getItem('valuesArr');
 let questionsArr = localStorage.getItem('questionsArr');
-let roundAnswersArr = localStorage.getItem('roundAnswersArr');
+let answersArr = localStorage.getItem('answersArr');
 let catOneQuestions = document.querySelectorAll('#catOneQuestions > button');
 let catTwoQuestions = document.querySelectorAll('#catTwoQuestions > button');
 let catThreeQuestions = document.querySelectorAll('#catThreeQuestions > button');
@@ -46,8 +46,9 @@ async function readJeopardyData() {
     valuesArr = setUpLocalStorageValuesArr(roundData, categoriesArr);
     setUpValueDoms(valuesArr);
     questionsArr = setUpLocalStorageQuestionsArr(roundData, categoriesArr, valuesArr);
-    setUpQuestionDoms(questionsArr)
-
+    setUpQuestionDoms(questionsArr);
+    answersArr = setUpLocalStorageAnswersArr(roundData, categoriesArr, valuesArr);
+    setUpAnswerDoms(answersArr);
     selectedquestionsArr = setUpSelectedQuestion();
     setUpQuestionListener();
 }
@@ -63,7 +64,10 @@ function setUpQuestionListener() {
         question.addEventListener('click', function () {
             if (question.className == 'question') {
                 setQuestionToSelected(question.id);
-                submitAnswer();
+                let questionStr = question.getAttribute('data-question');
+                setQuestionModalText(questionStr);
+                let answerStr = question.getAttribute('data-answer');
+                submitAnswer(answerStr);
             }
         })
     }
@@ -146,24 +150,56 @@ let setUpLocalStorageCategoriesArr = (roundData) => {
 
 }
 
+let setUpLocalStorageAnswersArr = (roundData, categoriesArr, valuesArr) => {
+    answersArr = localStorage.getItem('answersArr');
+    if (answersArr === null) {
+        answersArr = [];
+        valuesArrCount = 0;
+        for (let i = 0; i < categoriesArr.length; i++) {
+            let categoryAnswersArr = [];
+            let categoryName = categoriesArr[i];
+            let categoryValueArr = valuesArr[valuesArrCount];
+            for (let i = 0; i < categoryValueArr.length; i++) {
+                let answerValue = categoryValueArr[i];
+                for (key in roundData[categoryName][answerValue]) {
+                    let answer = roundData[categoryName][answerValue][key].answer;
+                    // answer.toLowerCase();
+                    categoryAnswersArr.push(answer);
+                }
+            }
+            valuesArrCount++
+            answersArr.push(categoryAnswersArr);
+        }
+        console.log('if block: answer arr');
+        console.log(answersArr);
+        localStorage.setItem('answersArr', JSON.stringify(answersArr));
+        return answersArr;
+    } else {
+        answersArr = JSON.parse(answersArr);
+        console.log('the else block: answers arr');
+        console.log(answersArr);
+        return answersArr;
+    }
+}
+
 let setUpLocalStorageQuestionsArr = (roundData, categoriesArr, valuesArr) => {
     questionsArr = localStorage.getItem('questionsArr');
     if (questionsArr === null) {
         questionsArr = [];
         valuesArrCount = 0;
         for (let i = 0; i < categoriesArr.length; i++) {
-            let categoryquestionsArr = [];
+            let categoryQuestionsArr = [];
             let categoryName = categoriesArr[i];
             let categoryValueArr = valuesArr[valuesArrCount];
             for (let i = 0; i < categoryValueArr.length; i++) {
                 let questionValue = categoryValueArr[i];
                 for (key in roundData[categoryName][questionValue]) {
                     let question = roundData[categoryName][questionValue][key].question;
-                    categoryquestionsArr.push(question);
+                    categoryQuestionsArr.push(question);
                 }
             }
             valuesArrCount++
-            questionsArr.push(categoryquestionsArr);
+            questionsArr.push(categoryQuestionsArr);
         }
         console.log('if block: question arr');
         console.log(questionsArr);
@@ -218,6 +254,24 @@ let setUpValueDoms = (valuesArr) => {
     }
 }
 
+let setUpAnswerDoms = (answersArr) => {
+    for (let i = 0; i < categoriesDomArr.length; i++){
+        let categoryRow = categoriesDomArr[i];
+        let answers = answersArr[i];
+        let diffChecker = categoryRow.length - answers.length;
+        if (diffChecker != 0) {
+            for (let i = 0; i < diffChecker; i++){
+                answers.push('X');
+            }
+        }
+        for (let i = 0; i < categoryRow.length; i++){
+            let answer = categoryRow[i];
+            answer.setAttribute('data-answer', answers[i]);
+        }
+    }
+}
+
+
 let setUpQuestionDoms = (questionsArr) => {
     for (let i = 0; i < categoriesDomArr.length; i++){
         let categoryRow = categoriesDomArr[i];
@@ -255,15 +309,28 @@ function setQuestionToSelected(str) {
     localStorage.setItem('selectedQuestions', JSON.stringify(selectedquestionsArr));
 }
 
-function submitAnswer() {
+function setQuestionModalText(str) {
+    let questionModalBody = document.querySelector('#questionBody');
+    questionModalBody.innerText = `\n${str}`;
+}
+
+function submitAnswer(answerStr) {
     let answerInput = document.querySelector('#answerInput');
     let submitButton = document.querySelector('#submitButton');
     submitButton.addEventListener('click', function () {
         console.log('answer input?')
         console.log(answerInput.value);
-
-    })
-}
+        let userSubmission = answerInput.value;
+        userSubmission.toLowerCase();
+        answerStr.toLowerCase();
+        let answerModalBody = document.querySelector('#answerBody');
+        if (userSubmission == answerStr){
+            answerModalBody.innerText = '\nCongratulations, you are correct!';
+        } else {
+            answerModalBody.innerText = `\nI'm sorry. The correct answer is:\n\n${answerStr}`;
+        }
+    });
+};
 
 function resetLocalStorage() {
     selectedquestionsArr = [];
