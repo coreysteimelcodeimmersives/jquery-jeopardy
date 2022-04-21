@@ -1,13 +1,14 @@
 // GLOBAL VARIABLES
-let selectedQuestionArr = localStorage.getItem('selectedQuestions');
+let selectedquestionsArr = localStorage.getItem('selectedQuestions');
 let selectedQuestionDOM;
 let jeopardyRound = localStorage.getItem('jeopardyRound');
 let gameData = localStorage.getItem('gameData');
+let roundData = localStorage.getItem('roundData');
 let questions = document.querySelectorAll('#questions > div > button');
 let categories = document.querySelectorAll('#categories > button');
-let categoryArr = localStorage.getItem('categoryArr');
-let valueArr = localStorage.getItem('valueArr');
-let questionArr = localStorage.getItem('questionArr');
+let categoriesArr = localStorage.getItem('categoriesArr');
+let valuesArr = localStorage.getItem('valuesArr');
+let questionsArr = localStorage.getItem('questionsArr');
 let roundAnswersArr = localStorage.getItem('roundAnswersArr');
 let catOneQuestions = document.querySelectorAll('#catOneQuestions > button');
 let catTwoQuestions = document.querySelectorAll('#catTwoQuestions > button');
@@ -36,21 +37,18 @@ async function readJeopardyData() {
         }
     }
     console.log(dataByDate);
+    // resetLocalStorage();
     gameData = setUpGameData(dataByDate);
     jeopardyRound = setUpJeopardyRound();
-    console.log('round')
-    console.log(jeopardyRound);
-    console.log('round data')
-    let roundData = gameData[jeopardyRound];
-    console.log(roundData);
-    categoryArr = setUpCategories(roundData);
-    valueArr = setUpLocalStorageValuesArr(roundData, categoryArr);
-    setUpQuestionValueDoms(valueArr, categoriesDomArr);
-    console.log('value doms arr')
-    console.log(valueArr);
-    questionArr =
-    // resetLocalStorage();
-    selectedQuestionArr = setUpSelectedQuestion();
+    roundData = setUpRoundData(gameData, jeopardyRound);
+    categoriesArr = setUpLocalStorageCategoriesArr(roundData);
+    setUpCategoriesDoms(categoriesArr);
+    valuesArr = setUpLocalStorageValuesArr(roundData, categoriesArr);
+    setUpValueDoms(valuesArr, categoriesDomArr);
+    questionsArr = setUpLocalStorageQuestionsArr(roundData, categoriesArr, valuesArr);
+    // questionsArr =
+
+    selectedquestionsArr = setUpSelectedQuestion();
     setUpQuestionListener();
 }
 
@@ -72,20 +70,20 @@ function setUpQuestionListener() {
 }
 
 let setUpSelectedQuestion = () => {
-    selectedQuestionArr = localStorage.getItem('selectedQuestions');
-    if (selectedQuestionArr === null) {
-        selectedQuestionArr = [];
+    selectedquestionsArr = localStorage.getItem('selectedQuestions');
+    if (selectedquestionsArr === null) {
+        selectedquestionsArr = [];
     } else {
-        selectedQuestionArr = JSON.parse(selectedQuestionArr);
-        for (let i = 0; i < selectedQuestionArr.length; i++) {
-            selectedQuestionDOM = document.querySelector(`#${selectedQuestionArr[i]}`);
+        selectedquestionsArr = JSON.parse(selectedquestionsArr);
+        for (let i = 0; i < selectedquestionsArr.length; i++) {
+            selectedQuestionDOM = document.querySelector(`#${selectedquestionsArr[i]}`);
             selectedQuestionDOM.removeAttribute('data-bs-toggle');
             selectedQuestionDOM.removeAttribute('data-bs-target');
             selectedQuestionDOM.classList.remove('question');
             selectedQuestionDOM.classList.add('selected');
         }
     }
-    return selectedQuestionArr;
+    return selectedquestionsArr;
 }
 
 let setUpGameData = (data) => {
@@ -93,86 +91,120 @@ let setUpGameData = (data) => {
     if (gameData === null) {
         gameData = _.sample(data);
         localStorage.setItem('gameData', JSON.stringify(gameData));
+        console.log('if block: game data')
         console.log(gameData);
         return gameData;
     } else {
         gameData = JSON.parse(gameData);
+        console.log('else block: game data')
         console.log(gameData);
         return gameData;
     }
 }
 
-let setUpCategories = (roundData) => {
-    categoryArr = localStorage.getItem('categoryArr');
-    if (categoryArr === null) {
-        categoryArr = [];
-        i = 0;
+let setUpRoundData = (gameData, jeopardyRound) => {
+    roundData = localStorage.getItem('roundData');
+    if (roundData === null) {
+        roundData = gameData[jeopardyRound];
+        localStorage.setItem('roundData', JSON.stringify(roundData));
+        console.log('if block: round data');
+        console.log(roundData);
+        return roundData;
+    } else {
+        roundData = JSON.parse(roundData);
+        console.log('else block: round data');
+        console.log(roundData);
+        return roundData;
+    }
+}
+
+let setUpCategoriesDoms = (categoriesArr) => {
+    for (let i = 0; i < categories.length; i++) {
+        let categoryBox = categories[i];
+        categoryBox.id = categoriesArr[i];
+        categoryBox.innerText = categoriesArr[i];
+    }
+}
+
+let setUpLocalStorageCategoriesArr = (roundData) => {
+    categoriesArr = localStorage.getItem('categoriesArr');
+    if (categoriesArr === null) {
+        categoriesArr = [];
         for (let key in roundData) {
-            let categoryText = key;
-            categoryArr.push(key);
-            let categoryBox = categories[i];
-            categoryBox.id = categoryText;
-            categoryBox.innerText = key;
-            i++
+            categoriesArr.push(key);
         }
-        localStorage.setItem('categoryArr', JSON.stringify(categoryArr));
-        return categoryArr;
+        localStorage.setItem('categoriesArr', JSON.stringify(categoriesArr));
+        console.log('if block: categories arr');
+        console.log(categoriesArr);
+        return categoriesArr;
     } else {
-        categoryArr = JSON.parse(categoryArr);
-        for (let i = 0; i < categories.length; i++) {
-            let categoryBox = categories[i];
-            categoryBox.id = categoryArr[i];
-            categoryBox.innerText = categoryArr[i];
-        }
-        return categoryArr;
+        categoriesArr = JSON.parse(categoriesArr);
+        console.log('else block: categories arr');
+        console.log(categoriesArr);
+        return categoriesArr;
     }
 
 }
 
-let setUpLocalStorageQuestionsArr = (roundData, categoryArr, valueArr) => {
-    questionArr = localStorage.getItem('questionArr');
-    if (questionArr === null) {
-        questionArr = [];
-        for (let i = 0; i < valueArr.length; i++){
-
+let setUpLocalStorageQuestionsArr = (roundData, categoriesArr, valuesArr) => {
+    questionsArr = localStorage.getItem('questionsArr');
+    if (questionsArr === null) {
+        questionsArr = [];
+        valuesArrCount = 0;
+        for (let i = 0; i < categoriesArr.length; i++) {
+            let categoryquestionsArr = [];
+            let categoryName = categoriesArr[i];
+            let categoryValueArr = valuesArr[valuesArrCount];
+            for (let i = 0; i < categoryValueArr.length; i++) {
+                let questionValue = categoryValueArr[i];
+                for (key in roundData[categoryName][questionValue]) {
+                    let question = roundData[categoryName][questionValue][key].question;
+                    categoryquestionsArr.push(question);
+                }
+            }
+            valuesArrCount++
+            questionsArr.push(categoryquestionsArr);
         }
-        
+        console.log('if block: question arr');
+        console.log(questionsArr);
+        localStorage.setItem('questionsArr', JSON.stringify(questionsArr));
+        return questionsArr;
     } else {
-        questionArr = JSON.parse(questionArr);
-        console.log('the else round question arr');
-        console.log(questionArr);
-        return questionArr;
+        questionsArr = JSON.parse(questionsArr);
+        console.log('the else block: question arr');
+        console.log(questionsArr);
+        return questionsArr;
     }
 }
 
-let setUpLocalStorageValuesArr = (roundData, categoryArr) => {
-    valueArr = localStorage.getItem('valueArr');
-    if (valueArr === null) {
-        valueArr = [];
-        for (let i = 0; i < categoryArr.length; i++) {
-            let catName = categoryArr[i];
+let setUpLocalStorageValuesArr = (roundData, categoriesArr) => {
+    valuesArr = localStorage.getItem('valuesArr');
+    if (valuesArr === null) {
+        valuesArr = [];
+        for (let i = 0; i < categoriesArr.length; i++) {
+            let catName = categoriesArr[i];
             let arr = [];
-            let x = 0;
             for (key in roundData[catName]) {
                 arr.push(key);
-                x++;
             }
-            valueArr.push(arr);
+            valuesArr.push(arr);
         }
-        localStorage.setItem('valueArr', JSON.stringify(valueArr));
-        console.log('round value arr')
-        console.log(valueArr);
-        return valueArr;
+        localStorage.setItem('valuesArr', JSON.stringify(valuesArr));
+        console.log('if block: round value arr')
+        console.log(valuesArr);
+        return valuesArr;
     } else {
-        valueArr = JSON.parse(valueArr);
-        return valueArr;
+        valuesArr = JSON.parse(valuesArr);
+        console.log('else block: round value arr')
+        console.log(valuesArr);
+        return valuesArr;
     }
 }
 
-let setUpQuestionValueDoms = (valueArr, categoriesDomArr) => {
+let setUpValueDoms = (valuesArr, categoriesDomArr) => {
     for (let i = 0; i < categoriesDomArr.length; i++) {
         let categoryRow = categoriesDomArr[i];
-        let values = valueArr[i];
+        let values = valuesArr[i];
         let diffChecker = categoryRow.length - values.length;
         if (diffChecker != 0) {
             for (let i = 0; i < diffChecker; i++) {
@@ -191,6 +223,8 @@ let setUpJeopardyRound = () => {
     if (jeopardyRound === null) {
         jeopardyRound = "Jeopardy!"
     }
+    console.log('round')
+    console.log(jeopardyRound);
     return jeopardyRound;
 }
 
@@ -200,8 +234,8 @@ function setQuestionToSelected(str) {
     selectedQuestionDOM.removeAttribute('data-bs-target');
     selectedQuestionDOM.classList.remove('question');
     selectedQuestionDOM.classList.add('selected');
-    selectedQuestionArr.push(str);
-    localStorage.setItem('selectedQuestions', JSON.stringify(selectedQuestionArr));
+    selectedquestionsArr.push(str);
+    localStorage.setItem('selectedQuestions', JSON.stringify(selectedquestionsArr));
 }
 
 function submitAnswer() {
@@ -215,7 +249,7 @@ function submitAnswer() {
 }
 
 function resetLocalStorage() {
-    selectedQuestionArr = [];
-    localStorage.setItem('selectedQuestions', JSON.stringify(selectedQuestionArr));
+    selectedquestionsArr = [];
+    localStorage.setItem('selectedQuestions', JSON.stringify(selectedquestionsArr));
     localStorage.clear();
 }
