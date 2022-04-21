@@ -63,14 +63,14 @@ readJeopardyData();
 
 
 // Helper Functions
-function currencyToNum(val){
+function currencyToNum(val) {
     console.log('val')
     console.log(val);
     let newVal = '';
-    let numArr = ['1','2','3','4','5','6','7','8','9','0'];
-    for (let i = 0; i < val.length; i++){
+    let numArr = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+    for (let i = 0; i < val.length; i++) {
         console.log(val[i])
-        if (numArr.includes(val[i])){
+        if (numArr.includes(val[i])) {
             newVal = newVal + val[i];
             console.log(newVal);
         }
@@ -83,6 +83,9 @@ function setUpQuestionListener() {
     for (let i = 0; i < questions.length; i++) {
         let question = questions[i];
         question.addEventListener('click', function () {
+
+            console.log('before answering user score is')
+            console.log(userScore)
             if (question.className == 'question') {
                 setQuestionToSelected(question.id);
                 let questionStr = question.getAttribute('data-question');
@@ -91,6 +94,7 @@ function setUpQuestionListener() {
                 let questionValue = Number(currencyToNum(question.innerText));
                 console.log('question value');
                 console.log(questionValue);
+
                 submitAnswer(answerStr, questionValue);
             }
         })
@@ -386,32 +390,32 @@ function submitAnswer(answerStr, num) {
         console.log('answer input?')
         console.log(answerInput.value);
         let userSubmission = answerInput.value
-        if (userSubmission != null){
+        if (userSubmission != null) {
             userSubmission = userSubmission.toLowerCase();
         }
-        
         console.log('this is the user input to lower case');
         console.log(userSubmission);
         answerStr = answerStr.toLowerCase();
         console.log('this is the answer str to lower case');
         console.log(answerStr);
         let answerModalBody = document.querySelector('#answerBody');
-        console.log('num equals');
-        console.log(num);
         if (userSubmission == answerStr) {
             answerModalBody.innerText = '\nCongratulations, you are correct!';
-        } else {
+        } else if (userSubmission != answerStr && answerStr != null) {
             answerModalBody.innerText = `\nI'm sorry. The correct answer is:\n\n${answerStr}`;
-            num = num * (-1);
+            num = (-1) * num;
+            console.log('else block num')
+            console.log(num);
         }
-        console.log('in the modal user score');
-        userScore = setUpLocalStorageUserScore();
-        console.log(userScore);
-        userScore = Number(userScore) + num;
-        localStorage.setItem('userScore', userScore);
-        setUserScoreDom(userScore);
-        console.log('local storage user score');
-        console.log(setUpLocalStorageUserScore());
+        if (answerStr != null) {
+            userScore = Number(userScore) + num;
+            console.log('after answering user score is');
+            userScore = userScore.toString();
+            console.log(userScore);
+            localStorage.setItem('userScore', userScore);
+            setUserScoreDom(userScore);
+        }
+
     });
     answerInput.value = '';
 };
